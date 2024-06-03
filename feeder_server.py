@@ -78,7 +78,7 @@ class Feeder_server:
                 for i, val in enumerate(self.r_state_socks_client):
                     try:
                         is_connect_msg = 'is_connected'
-                        val.sendall(is_connect_msg.encode('UTF-8'))    
+                        val.send(is_connect_msg.encode('UTF-8'))    
                     except socket.error:
                         print('state_server_thread : client',val,'연결이 종료되었습니다.')
                         self.r_state_socks_client.remove(val)
@@ -123,7 +123,7 @@ class Feeder_server:
                 for i, val in enumerate(self.r_cmd_socks_client):
                     try:
                         is_connect_msg = 'is_connected'
-                        val.sendall(is_connect_msg.encode('UTF-8'))
+                        val.send(is_connect_msg.encode('UTF-8'))
                     except socket.error:
                         print('cmd_th : client',val,'연결이 종료되었습니다.')
                         if val in self.w_cmd_socks:
@@ -142,7 +142,7 @@ class Feeder_server:
             self.r_cmd_socks = self.r_cmd_socks_server + self.r_cmd_socks_client
             
             ##### 다중 급이기와의 TCP/IP 통신 이벤트 처리 ####
-            readEvent, writeEvent, errorEvent = select.select(self.r_cmd_socks, self.w_cmd_socks, self.r_cmd_socks, 2)
+            readEvent, writeEvent, errorEvent = select.select(self.r_cmd_socks, self.w_cmd_socks, self.r_cmd_socks, 1)
 
             for s in readEvent: # 읽기 가능 소켓 조사
                 if s is self.cmd_server_socket: # 서버 소켓에서 읽기 이벤트 발생
@@ -164,17 +164,19 @@ class Feeder_server:
                     try:
                         data = s.recv(self.BUFFER)
                         data = json.loads(data)
+                        
                         print("무엇이 출력됨?:",data)
                     except Exception as e:  # 연결이 종료되었는가?
                         print('error in cmd_event:', e)        
             for s in writeEvent:    # 쓰기 가능 소켓 조사        
                 try:
-                    next_msg = self.cmd_Queue[s].get_nowait()   # cmd 큐에서 메시지 인출
+                    next_msg = self.cmd_Queue[s].get_nowait()   #ZW cmd 큐에서 메시지 인출
                 except: # queue.Empty():
                     self.w_cmd_socks.remove(s)  # 송신 소켓 목록에서 제거
                 else:
                     json_state_msg = json.dumps(next_msg)
-                    s.sendall(json_state_msg.encode('UTF-8'))
+                    # s.sendall(json_state_msg.encode('UTF-8'))
+                    s.send(json_state_msg.encode('UTF-8'))
             for s in errorEvent:    # 오류 발생 소켓 조사
                 print("에러발생!에러발생!")
                 
