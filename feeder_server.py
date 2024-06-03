@@ -124,6 +124,7 @@ class Feeder_server:
                     try:
                         is_connect_msg = 'is_connected'
                         val.send(is_connect_msg.encode('UTF-8'))
+                        print(len(self.r_cmd_socks_client))
                     except socket.error:
                         print('cmd_th : client',val,'연결이 종료되었습니다.')
                         if val in self.w_cmd_socks:
