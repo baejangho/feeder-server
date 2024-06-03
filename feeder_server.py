@@ -14,12 +14,12 @@ class Feeder_server:
         self.server_ip = ip
         self.state_port = state_port
         self.cmd_port = cmd_port
-        self.BUFFER = 2**15                                     # buffer max size
+        self.BUFFER = 2**15 # buffer max size
 
         ## 주요 변수 초기화
-        self.feeder_max_num = 10                                # 총 급이기 수 = 10개로 가정     
-        self.info = feeder_variables.info                       # 모든 급이기 info 초기화
-        self.feeding_auto_plan = feeder_variables.auto_plan     # 모든 급이기 auto_plan 초기화
+        self.feeder_max_num = 10                            # 총 급이기 수 = 10개로 가정     
+        self.info = feeder_variables.info                   # 모든 급이기 info 초기화
+        self.feeding_auto_plan = feeder_variables.auto_plan # 모든 급이기 auto_plan 초기화
         
         ## 급이기 auto_plan에 따른 스케줄러 설정 ##
         for feeder, jobs in self.feeding_auto_plan.items():
@@ -77,7 +77,7 @@ class Feeder_server:
             if self.r_state_socks_client:
                 for i, val in enumerate(self.r_state_socks_client):
                     try:
-                        is_connect_msg = 'is_connected'
+                        is_connect_msg = ' '
                         val.send(is_connect_msg.encode('UTF-8'))    
                     except socket.error:
                         print('state_server_thread : client',val,'연결이 종료되었습니다.')
@@ -122,7 +122,7 @@ class Feeder_server:
             if self.r_cmd_socks_client:
                 for i, val in enumerate(self.r_cmd_socks_client):
                     try:
-                        is_connect_msg = 'is_connected'
+                        is_connect_msg = ' '
                         val.send(is_connect_msg.encode('UTF-8'))
                         print(len(self.r_cmd_socks_client))
                     except socket.error:
